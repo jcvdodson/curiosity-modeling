@@ -2,7 +2,7 @@
 
 abstract sig State {
     // The top of the max heap (may be empty)
-    top: lone StackElement
+    top: lone HeapElement
 }
 // There are only 3 states in the model: Initial -> Mid -> End
 // we only need to check these three states to ensure that the heap is a max heap
