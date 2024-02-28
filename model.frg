@@ -31,12 +31,20 @@ pred valid[b: Board] {
   yellowTurn[b] or redTurn[b]
 }
 
+fun absDifference[m: Int, n: Int]: Int {
+  let difference = subtract[m, n] {
+    difference > 0 => difference else subtract[0, difference]
+  }
+}
+
 -- Winning conditions (Horizontal, Vertical, and Diagonal wins)
 pred winH[b: Board, p: Player] {
   some r: Int | some disj c: Int, c2: Int, c3: Int, c4: Int |
     b.places[r][c] = p and b.places[r][c2] = p and b.places[r][c3] = p and b.places[r][c4] = p
     // check that r is within 0 to 5, and c within 0 to 6
     and r >= 0 and r <= 5 and c >= 0 and c <= 6 and c2 >= 0 and c2 <= 6 and c3 >= 0 and c3 <= 6 and c4 >= 0 and c4 <= 6
+    // check sequential columns
+    and absDifference[c, c2] = 1 and absDifference[c2, c3] = 1 and absDifference[c3, c4] = 1
 }
 
 pred winV[b: Board, p: Player] {
@@ -44,12 +52,8 @@ pred winV[b: Board, p: Player] {
     b.places[r][c] = p and b.places[r2][c] = p and b.places[r3][c] = p and b.places[r4][c] = p
     // check that c is within 0 to 6, and r within 0 to 5
     and c >= 0 and c <= 6 and r >= 0 and r <= 5 and r2 >= 0 and r2 <= 5 and r3 >= 0 and r3 <= 5 and r4 >= 0 and r4 <= 5
-}
-
-fun absDifference[m: Int, n: Int]: Int {
-  let difference = subtract[m, n] {
-    difference > 0 => difference else subtract[0, difference]
-  }
+    // check sequential rows
+    and absDifference[r, r2] = 1 and absDifference[r2, r3] = 1 and absDifference[r3, r4] = 1
 }
 
 pred winD[b: Board, p: Player] {
@@ -99,7 +103,7 @@ pred traces {
     -- Every transition is a valid move
     all s: Board | some Game.next[s] implies {
       some col: Int, p: Player |
-        col >= 0 and col <= 6 and // the column is within 1 to 7
+        // col >= 0 and col <= 6 and // the column is within 1 to 7
         move[s, Game.next[s], p, col]
     }
 }
@@ -107,5 +111,5 @@ pred traces {
 -- Run statement to find a winning configuration for Red
 run {
   traces
-  some b: Board | winD[b, Red]
+  some b: Board | winH[b, Red]
 } for exactly 5 Board for {next is linear}
