@@ -74,20 +74,34 @@ pred init[brd: Board] {
     all r: Int, c: Int | no brd.places[r][c]
 }
 
+fun nextRowForColumn[pre: Board, c: Int]: lone Int {
+  let r = min[{r: Int | r >= 0 and r <= 5 and no pre.places[r][c]}] {
+      (r >= 0 and r <= 5 and no pre.places[r][c]
+      and {all r2: Int | r2 < r and r2 >= 0 implies some pre.places[r2][c]}) implies r else none
+    }
+}
+
 -- Move predicate 
 pred move[pre: Board, post: Board, p: Player, c: Int] {
   // guard:
+  p = Red implies redTurn[pre] and // it is the player's turn
+  p = Yellow implies yellowTurn[pre] and
   c >= 0 and c <= 6 and // the column is within 0 to 6
-  {some r: Int | r >= 0 and r <= 5 and no pre.places[r][c]} and // the column is not full
-  valid[pre] and // the pre board is valid
-  p = Red implies redTurn[pre] and 
-  p = Yellow implies yellowTurn[pre] // it is the player's turn
-
-  // action:
-  // find the minimum row in the column that is not occupied
-  let r = min[{r: Int | r >= 0 and r <= 5 and no pre.places[r][c]}] |
-  post.places[r][c] = p and // Place the player's disc in that position
-  {all r2: Int, c2: Int | (r2 != r or c2 != c) implies post.places[r2][c2] = pre.places[r2][c2]} // All other positions are unchanged
+  valid[pre] // the pre board is valid
+  // let r = min[{r: Int | r >= 0 and r <= 5 and no pre.places[r][c]}] |
+  //   {r >= 0 and r <= 5 and no pre.places[r][c]
+  //     and {all r2: Int | r2 < r and r2 >= 0 implies some pre.places[r2][c]} // 
+  //     and post.places[r][c] = p and // Place the player's disc in that position
+  //     {all r2: Int, c2: Int | (r2 != r or c2 != c) implies post.places[r2][c2] = pre.places[r2][c2]}
+  // }
+  and (p = Red implies yellowTurn[post]) and (p = Yellow implies redTurn[post])
+  let r = nextRowForColumn[pre, c] {
+    not r = none and
+    r >= 0 and r <= 5 and no pre.places[r][c]
+    and post.places[r][c] = p and // Place the player's disc in that position
+    {all r2: Int, c2: Int | (r2 != r or c2 != c) implies post.places[r2][c2] = pre.places[r2][c2]}
+    and (p = Red implies yellowTurn[post]) and (p = Yellow implies redTurn[post]) // it is the other player's turn
+  }
 }
 
 one sig Game {
@@ -102,7 +116,6 @@ pred traces {
     -- Every transition is a valid move
     all s: Board | some Game.next[s] implies {
       some col: Int, p: Player |
-        // col >= 0 and col <= 6 and // the column is within 1 to 7
         move[s, Game.next[s], p, col]
     }
 }
@@ -111,4 +124,4 @@ pred traces {
 run {
   traces
   some b: Board | winH[b, Red]
-} for 5 Board for {next is linear}
+} for 8 Board for {next is linear}
