@@ -57,12 +57,11 @@ pred winV[b: Board, p: Player] {
 }
 
 pred winD[b: Board, p: Player] {
-  some r1, c1, r2, c2, r3, c3, r4, c4: Int |
-    (b.places[r1][c1] = p and b.places[r2][c2] = p and b.places[r3][c3] = p and b.places[r4][c4] = p) and
-    (absDifference[r1, r2] = 1 and absDifference[c1, c2] = 1) and
-    (absDifference[r2, r3] = 1 and absDifference[c2, c3] = 1) and
-    (absDifference[r3, r4] = 1 and absDifference[c3, c4] = 1) and
-    (absDifference[r1, r4] = 3 and absDifference[c1, c4] = 3)
+  some disj r1, r2, r3, r4: Int |
+    (absDifference[r1, r2] = 1 and absDifference[r2, r3] = 1 and absDifference[r3, r4] = 1)
+    and {some disj c1, c2, c3, c4: Int |
+          absDifference[c1, c2] = 1 and absDifference[c2, c3] = 1 and absDifference[c3, c4] = 1
+          and b.places[r1][c1] = p and b.places[r2][c2] = p and b.places[r3][c3] = p and b.places[r4][c4] = p}
 }
 
 -- A win predicate 
@@ -112,4 +111,4 @@ pred traces {
 run {
   traces
   some b: Board | winH[b, Red]
-} for exactly 5 Board for {next is linear}
+} for 5 Board for {next is linear}
