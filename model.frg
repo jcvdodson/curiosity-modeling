@@ -1,5 +1,7 @@
 #lang forge/bsl
 
+option run_sterling "vis.js"
+
 /*
   Connect 4 Model
 */
@@ -116,6 +118,7 @@ pred traces {
     -- Every transition is a valid move
     all s: Board | some Game.next[s] implies {
       some col: Int, p: Player |
+        col >= 0 and col <= 6 and
         move[s, Game.next[s], p, col]
     }
 }
