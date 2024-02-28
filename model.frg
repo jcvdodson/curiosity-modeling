@@ -40,18 +40,41 @@ pred valid[b: Board] {
 }
 
 -- Winning conditions (Horizontal, Vertical, and Diagonal wins)
+// pred winH[b: Board, p: Player] {
+//   some r: Row | some c: Column, c2: Column, c3: Column, c4: Column |
+//     b.places[r][c] = p and b.places[r][c2] = p and b.places[r][c3] = p and b.places[r][c4] = p
+// }
 pred winH[b: Board, p: Player] {
-  some r: Row | some c: Column, c2: Column, c3: Column, c4: Column |
+  some r: Row | some disj c: Column, c2: Column, c3: Column, c4: Column |
     b.places[r][c] = p and b.places[r][c2] = p and b.places[r][c3] = p and b.places[r][c4] = p
+    // check that r is within 0 to 5, and c within 0 to 6
+    and r >= 0 and r <= 5 and c >= 0 and c <= 6 and c2 >= 0 and c2 <= 6 and c3 >= 0 and c3 <= 6 and c4 >= 0 and c4 <= 6
 }
 
+// pred winV[b: Board, p: Player] {
+//   some c: Column | some r: Row, r2: Row, r3: Row, r4: Row |
+//     b.places[r][c] = p and b.places[r2][c] = p and b.places[r3][c] = p and b.places[r4][c] = p
+// }
 pred winV[b: Board, p: Player] {
-  some c: Column | some r: Row, r2: Row, r3: Row, r4: Row |
+  some c: Column | some disj r: Row, r2: Row, r3: Row, r4: Row |
     b.places[r][c] = p and b.places[r2][c] = p and b.places[r3][c] = p and b.places[r4][c] = p
+    // check that c is within 0 to 6, and r within 0 to 5
+    and c >= 0 and c <= 6 and r >= 0 and r <= 5 and r2 >= 0 and r2 <= 5 and r3 >= 0 and r3 <= 5 and r4 >= 0 and r4 <= 5
+}
+
+fun absDifference[m: Int, n: Int]: Int {
+  let difference = subtract[m, n] {
+    difference > 0 => difference else subtract[0, difference]
+  }
 }
 
 pred winD[b: Board, p: Player] {
-    //have not done this yet
+  some c1, c2, c3, c4: Column| some r1, r2, r3, r4: Row|{
+    (b.places[r1][c1] = p and b.places[r2][c2] = p and b.places[r3][c3] = p and b.places[r4][c4] = p) and
+    (absDifference[r1, r2] = 1 and absDifference[c1, c2] = 1) and
+    (absDifference[r2, r3] = 1 and absDifference[c2, c3] = 1) and
+    (absDifference[r3, r4] = 1 and absDifference[c3, c4] = 1) and
+    (absDifference[r1, r4] = 3 and absDifference[c1, c4] = 3)}
 }
 
 -- A win predicate 
@@ -66,7 +89,18 @@ pred init[brd: Board] {
 
 -- Move predicate 
 pred move[pre: Board, post: Board, p: Player, c: Column] {
-    //turn have to alternate and discs have to fall to lowest row.. have not done yet
+  // guard:
+  c >= 0 and c <= 6 and // the column is within 0 to 6
+  {some r: Row | r >= 0 and r <= 5 and no pre.places[r][c]} and // the column is not full
+  valid[pre] and // the pre board is valid
+  p = Red implies redTurn[pre] and 
+  p = Yellow implies yellowTurn[pre] // it is the player's turn
+
+  // action:
+  // find the minimum row in the column that is not occupied
+  let r = min[{r: Row | r >= 0 and r <= 5 and no pre.places[r][c]}] |
+  post.places[r][c] = p and // Place the player's disc in that position
+  {all r2: Row, c2: Column | (r2 != r or c2 != c) implies post.places[r2][c2] = pre.places[r2][c2]} // All other positions are unchanged
 }
 
 -- Run statement to find a winning configuration for Red
