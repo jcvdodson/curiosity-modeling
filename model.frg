@@ -74,8 +74,9 @@ pred init[brd: Board] {
 -- Move predicate 
 pred move[pre: Board, post: Board, p: Player, c: Int] {
   // guard:
-  c >= 1 and c <= 7 and // the column is within 1 to 7
+  c >= 0 and c <= 6 and // the column is within 0 to 6
   {some r: Int | r >= 0 and r <= 5 and no pre.places[r][c]} and // the column is not full
+  valid[pre] and // the pre board is valid
   p = Red implies redTurn[pre] and 
   p = Yellow implies yellowTurn[pre] // it is the player's turn
 
@@ -86,7 +87,25 @@ pred move[pre: Board, post: Board, p: Player, c: Int] {
   {all r2: Int, c2: Int | (r2 != r or c2 != c) implies post.places[r2][c2] = pre.places[r2][c2]} // All other positions are unchanged
 }
 
+one sig Game {
+  initialState: one Board,
+  next: pfunc Board -> Board
+}
+
+pred traces {
+    -- The trace starts with an initial state
+    init[Game.initialState]
+    no sprev: Board | Game.next[sprev] = Game.initialState
+    -- Every transition is a valid move
+    all s: Board | some Game.next[s] implies {
+      some col: Int, p: Player |
+        col >= 0 and col <= 6 and // the column is within 1 to 7
+        move[s, Game.next[s], p, col]
+    }
+}
+
 -- Run statement to find a winning configuration for Red
 run {
-    some b: Board | init[b] and winning[b, Red]
-} for exactly 1 Board
+  traces
+  some b: Board | winD[b, Red]
+} for exactly 5 Board for {next is linear}
