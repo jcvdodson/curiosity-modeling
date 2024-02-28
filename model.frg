@@ -47,6 +47,8 @@ pred valid[b: Board] {
 pred winH[b: Board, p: Player] {
   some r: Row | some disj c: Column, c2: Column, c3: Column, c4: Column |
     b.places[r][c] = p and b.places[r][c2] = p and b.places[r][c3] = p and b.places[r][c4] = p
+    and ((c=C1 and c2=C2 and c3=C3 and c4=C4) or (c=C2 and c2=C3 and c3=C4 and c4=C5) or (c=C3 and c2=C4 and c3=C5 and c4=C6))
+    //and add[c, 1] = c2 and add[c2, 1] = c3 and add[c3, 1]=c4 
     // check that r is within 0 to 5, and c within 0 to 6
     and r >= 0 and r <= 5 and c >= 0 and c <= 6 and c2 >= 0 and c2 <= 6 and c3 >= 0 and c3 <= 6 and c4 >= 0 and c4 <= 6
 }
@@ -58,6 +60,8 @@ pred winH[b: Board, p: Player] {
 pred winV[b: Board, p: Player] {
   some c: Column | some disj r: Row, r2: Row, r3: Row, r4: Row |
     b.places[r][c] = p and b.places[r2][c] = p and b.places[r3][c] = p and b.places[r4][c] = p
+    and ((r=R1 and r2=R2 and r3=R3 and r4=R4) or (r=R2 and r2=R3 and r3=R4 and r4=R5) or (r=R3 and r2=R4 and r3=R5 and r4=R6))
+    //and add[r,1]=r2 and add[r2, 1]=r3 and add[r3, 1]=r4
     // check that c is within 0 to 6, and r within 0 to 5
     and c >= 0 and c <= 6 and r >= 0 and r <= 5 and r2 >= 0 and r2 <= 5 and r3 >= 0 and r3 <= 5 and r4 >= 0 and r4 <= 5
 }
