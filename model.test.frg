@@ -27,6 +27,7 @@ pred moveIsValidAndAlternatesTurn[pre: Board, post: Board, p: Player, c: Int] {
       (p = Yellow implies redTurn[post]))
 }
 
+
 test suite for move {
   assert all pre, post:Board, p:Player, c:Int| moveIsValidAndAlternatesTurn[pre, post, p, c] is necessary for move[pre, post, p, c]
 }
@@ -89,3 +90,19 @@ test suite for winD {
   assert all b:Board, p:Player| consecRowsCols[b,p] is necessary for winD[b,p]
   assert all b:Board, p:Player| validRowCol[b,p] is necessary for winD[b,p]
 }
+fun countPiece[brd: Board, p: Player]: one Int {
+  #{r: Int, c: Int | brd.places[r][c] = p}
+}
+pred turn[b: Board] {
+  countPiece[b, Red] = countPiece[b, Yellow] or
+  subtract[countPiece[b, Red], 1] = countPiece[b, Yellow]
+}
+
+test suite for valid{
+  assert all b:Board| turn[b] is necessary for valid[b]
+
+}
+
+
+
+

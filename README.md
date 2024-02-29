@@ -37,7 +37,7 @@ How They Fit Together:
 The signatures define the essential components of the Connect4 game. The predicates and the function describe the logic governing the game: how turns are taken, how the game progresses, and under what conditions the game ends. All together, they model the Connect4 game.
 
 # Testing: What tests did you write to test your model itself? What tests did you write to verify properties about your domain area? Feel free to give a high-level overview of this.
-I wrote a test suite for each predicate and included assert statements inside to ensure that all conditions are met. 
+We wrote a test suite for each predicate and included assert statements inside to ensure that all conditions are met. 
 
 # Documentation: Make sure your model and test files are well-documented. This will help in understanding the structure and logic of your project.
 We added comments above each predicate to explain each component of our model.
