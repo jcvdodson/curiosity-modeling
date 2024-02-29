@@ -39,31 +39,41 @@ fun absDifference[m: Int, n: Int]: Int {
   }
 }
 
+//
 -- Winning conditions (Horizontal, Vertical, and Diagonal wins)
 pred winH[b: Board, p: Player] {
-  some r: Int | some disj c: Int, c2: Int, c3: Int, c4: Int |
-    b.places[r][c] = p and b.places[r][c2] = p and b.places[r][c3] = p and b.places[r][c4] = p
+  some r, c: Int |{
+    b.places[r][c] = p and b.places[r][add[c,1]] = p and b.places[r][add[c,2]] = p and b.places[r][add[c,3]] = p
     // check that r is within 0 to 5, and c within 0 to 6
-    and r >= 0 and r <= 5 and c >= 0 and c <= 6 and c2 >= 0 and c2 <= 6 and c3 >= 0 and c3 <= 6 and c4 >= 0 and c4 <= 6
+    and r >= 0 and r <= 5 and c >= 0 and c <= 6
     // check sequential columns
-    and absDifference[c, c2] = 1 and absDifference[c2, c3] = 1 and absDifference[c3, c4] = 1
+    //and absDifference[c, c2] = 1 and absDifference[c2, c3] = 1 and absDifference[c3, c4] = 1
+  }
 }
 
 pred winV[b: Board, p: Player] {
-  some c: Int | some disj r: Int, r2: Int, r3: Int, r4: Int |
-    b.places[r][c] = p and b.places[r2][c] = p and b.places[r3][c] = p and b.places[r4][c] = p
+  some r, c: Int |{
+    b.places[r][c] = p and b.places[add[r,1]][c] = p and b.places[add[r,2]][c] = p and b.places[add[r,3]][c] = p
     // check that c is within 0 to 6, and r within 0 to 5
-    and c >= 0 and c <= 6 and r >= 0 and r <= 5 and r2 >= 0 and r2 <= 5 and r3 >= 0 and r3 <= 5 and r4 >= 0 and r4 <= 5
+    and c >= 0 and c <= 6 and r >= 0 and r <= 5
     // check sequential rows
-    and absDifference[r, r2] = 1 and absDifference[r2, r3] = 1 and absDifference[r3, r4] = 1
+    //and absDifference[r, r2] = 1 and absDifference[r2, r3] = 1 and absDifference[r3, r4] = 1
+  }
 }
 
 pred winD[b: Board, p: Player] {
-  some disj r1, r2, r3, r4: Int |
-    (absDifference[r1, r2] = 1 and absDifference[r2, r3] = 1 and absDifference[r3, r4] = 1)
-    and {some disj c1, c2, c3, c4: Int |
-          absDifference[c1, c2] = 1 and absDifference[c2, c3] = 1 and absDifference[c3, c4] = 1
-          and b.places[r1][c1] = p and b.places[r2][c2] = p and b.places[r3][c3] = p and b.places[r4][c4] = p}
+  some r, c: Int |{
+    b.places[r][c] = p and b.places[add[r,1]][add[c,1]] = p and b.places[add[r,2]][add[c,2]] = p and b.places[add[r,3]][add[c,3]] = p
+    // check that c is within 0 to 6, and r within 0 to 5
+    and c >= 0 and c <= 6 and r >= 0 and r <= 5
+    // check sequential rows
+    //and absDifference[r, r2] = 1 and absDifference[r2, r3] = 1 and absDifference[r3, r4] = 1
+  }
+  // some disj r1, r2, r3, r4: Int |
+  //   (absDifference[r1, r2] = 1 and absDifference[r2, r3] = 1 and absDifference[r3, r4] = 1)
+  //   and {some disj c1, c2, c3, c4: Int |
+  //         absDifference[c1, c2] = 1 and absDifference[c2, c3] = 1 and absDifference[c3, c4] = 1
+  //         and b.places[r1][c1] = p and b.places[r2][c2] = p and b.places[r3][c3] = p and b.places[r4][c4] = p}
 }
 
 -- A win predicate 
