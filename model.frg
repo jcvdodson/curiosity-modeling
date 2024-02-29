@@ -100,12 +100,6 @@ pred move[pre: Board, post: Board, p: Player, c: Int] {
   p = Yellow implies yellowTurn[pre] and
   c >= 0 and c <= 6 and // the column is within 0 to 6
   valid[pre] // the pre board is valid
-  // let r = min[{r: Int | r >= 0 and r <= 5 and no pre.places[r][c]}] |
-  //   {r >= 0 and r <= 5 and no pre.places[r][c]
-  //     and {all r2: Int | r2 < r and r2 >= 0 implies some pre.places[r2][c]} // 
-  //     and post.places[r][c] = p and // Place the player's disc in that position
-  //     {all r2: Int, c2: Int | (r2 != r or c2 != c) implies post.places[r2][c2] = pre.places[r2][c2]}
-  // }
   and (p = Red implies yellowTurn[post]) and (p = Yellow implies redTurn[post])
   let r = nextRowForColumn[pre, c] {
     not r = none and

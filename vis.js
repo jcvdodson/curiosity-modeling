@@ -1,10 +1,17 @@
+if (document.getElementById('connectFourBoard')) {
+    document.getElementById('connectFourBoard').remove();
+}
 var chessboard = document.createElement('div');
 chessboard.setAttribute('id','connectFourBoard');
 div.appendChild(chessboard);
 chessboard.style.borderRadius = '10px';
 
 function createConnectFourBoard() {
+    if (document.getElementById('connectFourTable')) {
+        document.getElementById('connectFourTable').remove();
+    }
     var table = document.createElement('table');
+    table.setAttribute('id', 'connectFourTable');
     table.style.border = '1px solid black';
     table.style.margin = 'auto';
     table.style.borderCollapse = 'collapse';
@@ -85,5 +92,4 @@ function createBoardData(board) {
     return boardData;
 }
   
-// Call the function to render the board
 createConnectFourBoard();
